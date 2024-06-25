@@ -1,4 +1,4 @@
-class Solution2 {
+class Solution {
 public:
     int longestSubarray(vector<int>& nums, int limit) {
         deque<int> max_dq, min_dq;
