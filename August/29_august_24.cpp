@@ -1,33 +1,49 @@
 class Solution {
 public:
-    int countSubIslands(vector<vector<int>>& grid1, vector<vector<int>>& grid2) {
-        int result = 0;
-        for (int i = 0; i < size(grid2); ++i) {
-            for (int j = 0; j < size(grid2[0]); ++j) {
-                if (grid2[i][j]) {
-                    result += dfs(grid1, &grid2, i, j);
-                }
-            }
-        }
-        return result;
+    #define ll int
+    ll par[10005];
+    void make()
+    {
+        ll i;
+        for(i=0;i<=10000;i++)
+            par[i]=i;
     }
-
-private:
-    int dfs(const vector<vector<int>>& grid1,
-            vector<vector<int>> *grid2,
-            int i, int j) {
-        static const vector<pair<int, int>> directions{{0, 1}, {1, 0},
-                                                       {0, -1}, {-1, 0}};
-        if (!(0 <= i && i < size(*grid2) &&
-              0 <= j && j < size((*grid2)[0]) &&
-              (*grid2)[i][j] == 1)) {
-            return 1;
+    ll find(ll x)
+{
+   if(par[x]==x)return x;
+  return par[x]=find(par[x]);
+}
+    ll unite(ll x,ll y)
+    {
+        ll p1=find(x);
+        ll p2=find(y);
+        if(p1!=p2)
+        {
+            par[p1]=p2;
         }
-        (*grid2)[i][j] = 0;
-        int result = grid1[i][j];
-        for (const auto& [di, dj] : directions) {
-            result &= dfs(grid1, grid2, i + di, j + dj);
+        return 0;
+    }
+    int removeStones(vector<vector<int>>& stones) {
+        make();
+        set<ll>s;
+        ll i,j,n=stones.size();
+        for(i=0;i<n;i++)
+        {
+            
+           for(j=i+1;j<n;j++)
+           {
+               
+               if(stones[i][0]==stones[j][0] or stones[i][1]==stones[j][1])
+               {
+                   unite(i,j);
+               }
+           }
         }
-        return result;
+        ll cnt=0;
+        for(i=0;i<n;i++)
+        {
+            if(par[i]==i)cnt++;
+        }
+        return stones.size()-cnt;
     }
 };
