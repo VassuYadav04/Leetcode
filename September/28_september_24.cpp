@@ -1,25 +1,66 @@
-class MyCalendarTwo {
+class MyCircularDeque {
 public:
-    MyCalendarTwo() {
+    MyCircularDeque(int k) :
+        start_(0),
+        size_(0),
+        buffer_(k, 0) {
         
     }
     
-    bool book(int start, int end) {
-        for (const auto& p : overlaps_) {
-            if (start < p.second && end > p.first) {
-                return false;
-            }
+    bool insertFront(int value) {
+        if (isFull()) {
+            return false;
         }
-        for (const auto& p : calendar_) {
-            if (start < p.second && end > p.first) {
-                overlaps_.emplace_back(max(start, p.first), min(end, p.second));
-            }
-        }
-        calendar_.emplace_back(start, end);
+        start_ = (start_ - 1 + buffer_.size()) % buffer_.size();
+        buffer_[start_] = value;
+        ++size_;
         return true;
+    }
+    
+    bool insertLast(int value) {
+        if (isFull()) {
+            return false;
+        }
+        buffer_[(start_ + size_) % buffer_.size()] = value;
+        ++size_;
+        return true;
+    }
+    
+    bool deleteFront() {
+        if (isEmpty()) {
+            return false;
+        }
+        start_ = (start_ + 1) % buffer_.size();
+        --size_;
+        return true;
+    }
+    
+    bool deleteLast() {
+        if (isEmpty()) {
+            return false;
+        }
+        --size_;
+        return true;
+    }
+    
+    int getFront() {
+        return isEmpty() ? -1 : buffer_[start_];
+    }
+    
+    int getRear() {
+        return isEmpty() ? -1 : buffer_[(start_ + size_ - 1) % buffer_.size()];
+    }
+    
+    bool isEmpty() {
+        return size_ == 0;
+    }
+    
+    bool isFull() {
+        return size_ == buffer_.size();
     }
 
 private:
-    vector<pair<int, int>> overlaps_;
-    vector<pair<int, int>> calendar_;
+    int start_;
+    int size_;
+    vector<int> buffer_;
 };
