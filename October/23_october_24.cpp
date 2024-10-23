@@ -1,27 +1,24 @@
 class Solution {
 public:
-    long long kthLargestLevelSum(TreeNode* root, int k) {
-        vector<int64_t> arr;
-        vector<TreeNode *> q = {root};
+    TreeNode* replaceValueInTree(TreeNode* root) {
+        vector<pair<TreeNode *, int>> q = {{root, root->val}};
         while (!empty(q)) {
-            vector<TreeNode *> new_q;
-            for (const auto& u : q) {
-                if (u->left) {
-                    new_q.emplace_back(u->left);
+            vector<pair<TreeNode *, int>> new_q;
+            const int total = accumulate(cbegin(q), cend(q), 0, [](const auto& total, const auto& x) {
+                return total + x.first->val;
+            });
+            for (auto [node, x] : q) {
+                node->val = total - x;
+                x = (node->left ? node->left->val : 0) + (node->right ? node->right->val : 0);
+                if (node->left) {
+                    new_q.emplace_back(node->left, x);
                 }
-                if (u->right) {
-                    new_q.emplace_back(u->right);
+                if (node->right) {
+                    new_q.emplace_back(node->right, x);
                 }
             }
-            arr.emplace_back(accumulate(cbegin(q), cend(q), 0LL, [](const auto& total, const auto& node) {
-                return total + node->val;
-            }));
             q = move(new_q);
         }
-        if (k - 1 >= size(arr)) {
-            return -1;
-        }
-        nth_element(begin(arr), begin(arr) + (k - 1), end(arr), greater<int64_t>());
-        return arr[k - 1];
+        return root;
     }
 };
